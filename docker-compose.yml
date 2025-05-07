@@ -1,0 +1,55 @@
+services:
+  db:
+      image: postgres:15
+      environment:
+        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      ports:
+        - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend  # Si ton projet Django est dans ./backend
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app  # Monte ton dossier backend
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"  # Applique les migrations et démarre le serveur
+    depends_on:
+      - db
+    environment:
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE}
+  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_URL=${BACKEND_URL}
+      - WATCHPACK_POLLING=${WATCHPACK_POLLING}
+    volumes:
+      - ./frontend:/app:cached
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    
+volumes:
+  postgres_data:

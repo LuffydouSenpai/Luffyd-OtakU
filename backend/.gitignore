@@ -1,0 +1,29 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+*.sqlite3
+
+# Env files
+.env
+*.env
+
+# Django specific
+/static/
+media/
+*.log
+
+# VSCode / IDE
+.vscode/
+*.code-workspace
+.idea/
+
+# Migrations (optionnel si tu veux les ignorer au début)
+# backend/**/migrations/
+# !backend/**/migrations/__init__.py
+
+# Docker
+*.pid
+
+# System files
+.DS_Store
