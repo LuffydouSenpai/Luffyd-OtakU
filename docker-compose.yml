@@ -18,6 +18,7 @@ services:
       - .env
     volumes:
       - ./backend:/app  # Monte ton dossier backend
+      - ./media:/app/media
     ports:
       - "8000:8000"
     command: >
