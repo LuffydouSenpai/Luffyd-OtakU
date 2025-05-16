@@ -26,6 +26,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('season', models.CharField(choices=[('winter', 'Hiver'), ('spring', 'Printemps'), ('summer', 'Été'), ('autumn', 'Automne')], max_length=10)),
                 ('year', models.PositiveIntegerField()),
+                ('slug', models.CharField(max_length=50, unique=True)),
             ],
             options={
                 'unique_together': {('season', 'year')},

@@ -15,8 +15,8 @@ class Migration(migrations.Migration):
             name='Format',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=50, unique=True)),
-                ('label', models.CharField(max_length=100)),
+                ('name', models.CharField(max_length=50, unique=True)),
+                ('slug', models.CharField(max_length=50, unique=True)),
             ],
         ),
         migrations.CreateModel(

@@ -15,4 +15,4 @@ class AnimeForm(forms.ModelForm):
         model = Anime
         fields = ['main_title', 'format', 'origin', 'synopsis', 'date_start', 'date_end', 'episode', 'duration', 'season', 'studio', 'studio_3D', 'url_nautiljon', 'url_mal', 'genres', 'themes', 'slug']
 
-    
+
