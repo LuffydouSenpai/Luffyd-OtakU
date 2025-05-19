@@ -81,6 +81,12 @@ class Origin(models.Model):
     name = models.CharField(max_length=50, unique=True)
     slug = models.CharField(max_length=50, unique=True)
     
+    def save(self, *args, **kwargs):
+        original_slug = slugify(f"{self.name}")
+        slug = original_slug
+        self.slug = slug
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.name
     
@@ -96,7 +102,7 @@ class Format(models.Model):
     
     def __str__(self):
         return self.name
-
+    
 class Season(models.Model):
     SEASON_CHOICES = [
         ('winter', 'Hiver'),
@@ -171,6 +177,9 @@ class Contribution(models.Model):
 class ContributionStudio(models.Model):
     studio = models.ForeignKey(Studio, on_delete=models.CASCADE, related_name='contributionStudio')
     studioRole = models.ForeignKey(StudioRole, on_delete=models.CASCADE, related_name='contributionStudio')
+    
+    class Meta:
+        unique_together = ('studio', 'studioRole')
     
     def __str__(self):
         return f"{self.studio}  - {self.studioRole}"

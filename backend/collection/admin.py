@@ -55,6 +55,7 @@ class RelationTypeAdmin(admin.ModelAdmin):
 class OriginAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')  # visible dans la liste
     search_fields = ('name', 'slug')            # champ de recherche
+    exclude = ('slug',)  # Exclut le champ 'slug' du formulaire
     
 @admin.register(Format)
 class FormatAdmin(admin.ModelAdmin):
