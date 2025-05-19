@@ -8,7 +8,7 @@ from .models import (
     AnimeEpisode, TomeManga, ChapterManga, TomeMangaImage, Scan,
     ScanImage, ScanTitle, RelationScan, TomeScan, ChapterScan,
     TomeScanImage, RelationAnimeManga, RelationAnimeScan,
-    RelationMangaScan
+    RelationMangaScan, Status
 )
 from .forms import AnimeForm
 from .admin_forms import MangaAdminForm, AnimeAdminForm, ScanAdminForm
@@ -42,7 +42,7 @@ class TypeMangaAdmin(admin.ModelAdmin):
     
 @admin.register(Language)
 class LanguageAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name')
+    list_display = ('code', 'name', 'native_name')
     search_fields = ('name',)
     
 @admin.register(RelationType)
@@ -53,8 +53,8 @@ class RelationTypeAdmin(admin.ModelAdmin):
     
 @admin.register(Origin)
 class OriginAdmin(admin.ModelAdmin):
-    list_display = ('code', 'label')  # visible dans la liste
-    search_fields = ('code', 'label')            # champ de recherche
+    list_display = ('name', 'slug')  # visible dans la liste
+    search_fields = ('name', 'slug')            # champ de recherche
     
 @admin.register(Format)
 class FormatAdmin(admin.ModelAdmin):
@@ -104,6 +104,11 @@ class ContributionAdmin(admin.ModelAdmin):
     search_fields = ('studio', 'studioRole')            # champ de recherche
     list_filter = ('studio',)
 
+@admin.register(Status)
+class StatusAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    search_fields = ('name',)
+    exclude = ('slug',)  # Exclut le champ 'slug' du formulaire
 
 # anime
 @admin.register(Anime)

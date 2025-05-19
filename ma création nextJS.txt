@@ -19,7 +19,7 @@ docker-compose build --no-cache
 docker-compose up
 
 
-avant: docker compose exec backend bash
+docker compose exec backend bash        bash pour écrire des commende pour le back
 python manage.py makemigrations         pour créer les migrations
 python manage.py migrate                pour appliquer les modifications
 

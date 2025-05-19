@@ -78,11 +78,11 @@ class RelationType(models.Model):
         return self.label
     
 class Origin(models.Model):
-    code = models.CharField(max_length=50, unique=True)
-    label = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.CharField(max_length=50, unique=True)
     
     def __str__(self):
-        return self.label
+        return self.name
     
 class Format(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -175,7 +175,18 @@ class ContributionStudio(models.Model):
     def __str__(self):
         return f"{self.studio}  - {self.studioRole}"
     
+class Status(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.CharField(max_length=50, unique=True)
+    
+    def save(self, *args, **kwargs):
+        original_slug = slugify(f"{self.name}")
+        slug = original_slug
+        self.slug = slug
+        super().save(*args, **kwargs)
 
+    def __str__(self):
+        return self.name
 
 # anime
 class Anime(models.Model):
@@ -274,6 +285,7 @@ class Manga(models.Model):
     main_title = models.CharField(max_length=255, unique=True)
     type = models.ForeignKey(TypeManga, on_delete=models.CASCADE, related_name='mangas')
     synopsis = models.TextField()
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, related_name='mangas')
     year_start_jp = models.PositiveIntegerField()
     year_start_fr = models.PositiveIntegerField()
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='mangas')
@@ -422,6 +434,7 @@ class Scan(models.Model):
     main_title = models.CharField(max_length=255, unique=True)
     type = models.ForeignKey(TypeManga, on_delete=models.CASCADE, related_name='scan')
     synopsis = models.TextField()
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, related_name='scan')
     year_start_jp = models.PositiveIntegerField()
     author = models.ManyToManyField('Contribution', related_name='scan_author', blank=True)
     scenariste = models.ManyToManyField('Contribution', related_name='scan_scenariste', blank=True)
