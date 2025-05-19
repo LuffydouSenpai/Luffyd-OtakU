@@ -2,3 +2,5 @@ Django>=5.0
 psycopg2>=2.9
 python-decouple
 dj-database-url
+python-slugify
+Pillow
