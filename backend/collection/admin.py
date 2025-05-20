@@ -5,13 +5,12 @@ from .models import (
     Manga, MangaImage, MangaTitle, RelationManga, Publisher,
     TypeManga, Language, RelationType, Origin, Format, Season,
     People, Role, Contribution, Studio, StudioRole, ContributionStudio,
-    AnimeEpisode, TomeManga, ChapterManga, TomeMangaImage, Scan,
-    ScanImage, ScanTitle, RelationScan, TomeScan, ChapterScan,
-    TomeScanImage, RelationAnimeManga, RelationAnimeScan,
+    AnimeEpisode, MangaTome, MangaChapter, MangaTomeImage, Scan,
+    ScanImage, ScanTitle, RelationScan, ScanTome, TomeChapter,
+    ScanTomeImage, RelationAnimeManga, RelationAnimeScan,
     RelationMangaScan, Status
 )
-from .forms import AnimeForm
-from .admin_forms import MangaAdminForm, AnimeAdminForm, ScanAdminForm
+from .admin_forms import MangaAdminForm, AnimeAdminForm, ScanAdminForm, TomeMangaAdminForm, TomeScanAdminForm
 
 
 
@@ -115,7 +114,7 @@ class StatusAdmin(admin.ModelAdmin):
 @admin.register(Anime)
 class AnimeAdmin(admin.ModelAdmin):
 
-    form = AnimeForm  # Associe le formulaire personnalisé à l'admin
+    form = AnimeAdminForm  # Associe le formulaire personnalisé à l'admin
     
     autocomplete_fields = ['season']
     list_display = ('id', 'main_title', 'image_previews', 'slug')
@@ -130,15 +129,16 @@ class AnimeAdmin(admin.ModelAdmin):
 
         # Crée un AnimeTitle automatiquement si on est en création et qu'un titre est fourni
         if not change and 'main_title' in form.cleaned_data:
+            jp_language = Language.objects.get(code='jp')  # ou .get(name='Japonais') si tu préfères
             AnimeTitle.objects.create(
                 anime=obj,
                 title=form.cleaned_data['main_title'],
-                language_code='jp',
-                is_main=True  # si tu as ce champ, sinon enlève cette ligne
-            )
+                language=jp_language,
+                is_main=True
+    )
      
     def image_previews(self, obj):
-        images = obj.images.all()  # Récupère toutes les images de cet anime
+        images = obj.animeImage.all()  # Récupère toutes les images de cet anime
         preview_html = ''
         for image in images:
             preview_html += f'<img src="{image.image.url}" width="75" height="100" style="margin-right:5px;" />'
@@ -191,8 +191,8 @@ class MangaAdmin(admin.ModelAdmin):
     autocomplete_fields = ['publisher']
     list_display = ('id', 'main_title', 'image_previews', 'slug')
     search_fields = ['main_title']
-    list_filter = ('genres', 'themes', 'author', 'designer', 'scenariste', 'chara_designer', 'publisher')
-    filter_horizontal = ('genres', 'themes', 'author', 'designer', 'scenariste', 'chara_designer')  # meilleure UX pour les ManyToMany
+    list_filter = ('genres', 'themes', 'author', 'designer', 'scenariste', 'chara_designer', 'publisher', "illustrator")
+    filter_horizontal = ('genres', 'themes', 'author', 'designer', 'scenariste', 'chara_designer', "illustrator")  # meilleure UX pour les ManyToMany
     exclude = ('slug',)  # Exclut le champ 'slug' du formulaire
     
     def save_model(self, request, obj, form, change):
@@ -252,21 +252,39 @@ class MangaTitleAdmin(admin.ModelAdmin):
     search_fields = ('title', 'language', 'slug')
     list_filter = ('is_original', 'is_nickname', 'language')
 
-@admin.register(TomeManga)
-class TomeMangaAdmin(admin.ModelAdmin):
-    list_display = ['manga', 'number', 'date_publication_jp', 'date_publication_fr']
-    search_fields = ['manga__main_title']
-    autocomplete_fields = ['manga']  
+@admin.register(MangaTome)
+class MangaTomeAdmin(admin.ModelAdmin):
     
-@admin.register(ChapterManga)
-class ChapterMangaAdmin(admin.ModelAdmin):
+    form = TomeMangaAdminForm
+    
+    list_display = ['manga','image_previews', 'number', 'date_publication_jp', 'date_publication_fr']
+    search_fields = ['manga__main_title']
+    autocomplete_fields = ['manga'] 
+    exclude = ('slug',)  # Exclut le champ 'slug' du formulaire
+    
+    def save_model(self, request, obj, form, change):
+        # Sauvegarde de l'objet Anime
+        super().save_model(request, obj, form, change)
+        
+    def image_previews(self, obj):
+        images = obj.images.all()  # Récupère toutes les images de cet anime
+        preview_html = ''
+        for image in images:
+            preview_html += f'<img src="{image.image.url}" width="75" height="100" style="margin-right:5px;" />'
+        return format_html(preview_html) if images else 'Aucune image'
+        
+    image_previews.allow_tags = True  # Permet d'afficher le HTML dans l'admin
+    image_previews.short_description = 'Aperçu des images'  # Titre de la colonne
+        
+@admin.register(MangaChapter)
+class MangaChapterAdmin(admin.ModelAdmin):
     list_display = ['tome_manga', 'number', 'title']
     list_filter = ['tome_manga']
     search_fields = ['title', 'tome_manga__manga__main_title']
     autocomplete_fields = ['tome_manga']
 
-@admin.register(TomeMangaImage)
-class TomeMangaImageAdmin(admin.ModelAdmin):
+@admin.register(MangaTomeImage)
+class MangaTomeImageAdmin(admin.ModelAdmin):
     autocomplete_fields = ['tome_manga']
     list_display = ('tome_manga', 'description', 'image_preview')
     search_fields = ('manga__main_title', 'description')
@@ -289,8 +307,8 @@ class ScanAdmin(admin.ModelAdmin):
     
     list_display = ('id', 'main_title', 'image_previews', 'slug')
     search_fields = ['main_title']
-    list_filter = ('genres', 'themes', 'author', 'designer', 'scenariste', 'chara_designer')
-    filter_horizontal = ('genres', 'themes', 'author', 'designer', 'scenariste', 'chara_designer')  # meilleure UX pour les ManyToMany
+    list_filter = ('genres', 'themes', 'author', 'designer', 'scenariste', 'chara_designer', "illustrator")
+    filter_horizontal = ('genres', 'themes', 'author', 'designer', 'scenariste', 'chara_designer', "illustrator")  # meilleure UX pour les ManyToMany
     exclude = ('slug',)  # Exclut le champ 'slug' du formulaire
     
     def save_model(self, request, obj, form, change):
@@ -350,21 +368,39 @@ class ScanTitleAdmin(admin.ModelAdmin):
     search_fields = ('title', 'language', 'slug')
     list_filter = ('is_original', 'is_nickname', 'language')
 
-@admin.register(TomeScan)
-class TomeScanAdmin(admin.ModelAdmin):
+@admin.register(ScanTome)
+class ScanTomeAdmin(admin.ModelAdmin):
+    
+    form = TomeScanAdminForm
+    
     list_display = ['scan', 'number', 'date_publication_jp']
     search_fields = ['scan__main_title']
     autocomplete_fields = ['scan']
+    exclude = ('slug',)  # Exclut le champ 'slug' du formulaire
+    
+    def save_model(self, request, obj, form, change):
+    # Sauvegarde de l'objet Scan
+        super().save_model(request, obj, form, change)
+    
+    def image_previews(self, obj):
+        images = obj.images.all()  # Récupère toutes les images de cet anime
+        preview_html = ''
+        for image in images:
+            preview_html += f'<img src="{image.image.url}" width="75" height="100" style="margin-right:5px;" />'
+        return format_html(preview_html) if images else 'Aucune image'
+        
+    image_previews.allow_tags = True  # Permet d'afficher le HTML dans l'admin
+    image_previews.short_description = 'Aperçu des images'  # Titre de la colonne
 
-@admin.register(ChapterScan)
-class ChapterScanAdmin(admin.ModelAdmin):
+@admin.register(TomeChapter)
+class ScanChapterAdmin(admin.ModelAdmin):
     list_display = ['tome_scan', 'number', 'title']
     list_filter = ['tome_scan']
     search_fields = ['title', 'tome_scan__scan__main_title']
     autocomplete_fields = ['tome_scan']
 
-@admin.register(TomeScanImage)
-class TomeScanImageAdmin(admin.ModelAdmin):
+@admin.register(ScanTomeImage)
+class ScanTomeImageAdmin(admin.ModelAdmin):
     autocomplete_fields = ['tome_scan']
     list_display = ('tome_scan', 'description', 'image_preview')
     search_fields = ('scan__main_title', 'description')
@@ -429,7 +465,6 @@ class RelationAnimeMangaAdmin(admin.ModelAdmin):
         return obj.manga if obj.source_type == 'anime' else obj.anime
     get_target.short_description = 'Cible'
     
-
 @admin.register(RelationAnimeScan)
 class RelationAnimeScanAdmin(admin.ModelAdmin):
     list_display = ('get_source', 'relation_type', 'get_target', 'source_type')
@@ -463,5 +498,5 @@ class RelationMangaScanAdmin(admin.ModelAdmin):
     get_source.short_description = 'Source'
 
     def get_target(self, obj):
-        return obj.sacn if obj.source_type == 'manga' else obj.manga
+        return obj.scan if obj.source_type == 'manga' else obj.manga
     get_target.short_description = 'Cible'

@@ -302,6 +302,7 @@ class Manga(models.Model):
     scenariste = models.ManyToManyField('Contribution', related_name='mangas_scenariste', blank=True)
     designer = models.ManyToManyField('Contribution', related_name='mangas_designer', blank=True)
     chara_designer = models.ManyToManyField('Contribution', related_name='mangas_chara_designer', blank=True)
+    illustrator = models.ManyToManyField('Contribution', related_name='mangas_illustrator', blank=True)
     storage = models.CharField(max_length=50, null=True)
     url_nautiljon = models.URLField(max_length=500, blank=True)
     url_mal = models.URLField(max_length=500, blank=True)
@@ -366,7 +367,7 @@ class MangaTitle(models.Model):
     def __str__(self):
         return f"Title: {self.title} ({self.language}) - Original: {self.is_original}"
       
-class TomeManga(models.Model):
+class MangaTome(models.Model):
     
     manga = models.ForeignKey(
         'Manga',
@@ -380,7 +381,7 @@ class TomeManga(models.Model):
     slug = models.CharField(max_length=255,null=True)
     
     def save(self, *args, **kwargs):
-        original_slug = slugify(f"{self.manga.main_name} Tome {self.number}")
+        original_slug = slugify(f"{self.manga.main_title} Tome {self.number}")
         slug = original_slug
         self.slug = slug
         super().save(*args, **kwargs)
@@ -391,9 +392,9 @@ class TomeManga(models.Model):
     def __str__(self):
         return f"{self.manga.main_title} – Tome {self.number}"
 
-class ChapterManga(models.Model):
+class MangaChapter(models.Model):
     tome_manga = models.ForeignKey(
-        TomeManga,
+        MangaTome,
         on_delete=models.CASCADE,
         related_name='chapters'
     )
@@ -406,19 +407,19 @@ class ChapterManga(models.Model):
     def __str__(self):
         return f"Chapitre {self.number} : {self.title}"
 
-class TomeMangaImage(models.Model):
-    tome_manga = models.ForeignKey(TomeManga, related_name='images', on_delete=models.CASCADE)
+class MangaTomeImage(models.Model):
+    tome_manga = models.ForeignKey(MangaTome, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='manga_images/')
     description = models.CharField(max_length=255, blank=True)
     
     def save(self, *args, **kwargs):
         # Générer le nom de fichier basé sur le slug de l'anime
-        manga_slug = slugify(self.manga.slug)
+        manga_slug = slugify(self.tome_manga.slug)
         base_filename = f"{manga_slug}"
 
         # Vérifier s'il existe déjà une image avec ce nom (pour ajouter un suffixe)
         count = 1
-        while TomeMangaImage.objects.filter(image__startswith=base_filename).exists():
+        while MangaTomeImage.objects.filter(image__startswith=base_filename).exists():
             base_filename = f"{manga_slug}-{count}"
             count += 1
         
@@ -433,7 +434,7 @@ class TomeMangaImage(models.Model):
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return f"Image de {self.manga.main_title}"
+        return f"Image de {self.tome_manga.manga.main_title}"
 
 
 
@@ -449,6 +450,7 @@ class Scan(models.Model):
     scenariste = models.ManyToManyField('Contribution', related_name='scan_scenariste', blank=True)
     designer = models.ManyToManyField('Contribution', related_name='scan_designer', blank=True)
     chara_designer = models.ManyToManyField('Contribution', related_name='scan_chara_designer', blank=True)
+    illustrator = models.ManyToManyField('Contribution', related_name='scan_illustrator', blank=True)
     url_nautiljon = models.URLField(max_length=500, blank=True)
     url_mal = models.URLField(max_length=500, blank=True)
     genres = models.ManyToManyField('Genre', related_name='scan', blank=True)
@@ -512,7 +514,7 @@ class ScanTitle(models.Model):
     def __str__(self):
         return f"Title: {self.title} ({self.language}) - Original: {self.is_original}"
       
-class TomeScan(models.Model):
+class ScanTome(models.Model):
     
     scan = models.ForeignKey(
         'Scan',
@@ -525,7 +527,7 @@ class TomeScan(models.Model):
     slug = models.CharField(max_length=255,null=True)
     
     def save(self, *args, **kwargs):
-        original_slug = slugify(f"{self.scan.main_name} Tome {self.number}")
+        original_slug = slugify(f"{self.scan.main_title} Tome {self.number}")
         slug = original_slug
         self.slug = slug
         super().save(*args, **kwargs)
@@ -536,9 +538,9 @@ class TomeScan(models.Model):
     def __str__(self):
         return f"{self.scan.main_title} – Tome {self.number}"
 
-class ChapterScan(models.Model):
+class TomeChapter(models.Model):
     tome_scan = models.ForeignKey(
-        TomeScan,
+        ScanTome,
         on_delete=models.CASCADE,
         related_name='scan_chapters'
     )
@@ -551,19 +553,19 @@ class ChapterScan(models.Model):
     def __str__(self):
         return f"Chapitre {self.number} : {self.title}"
 
-class TomeScanImage(models.Model):
-    tome_scan = models.ForeignKey(TomeScan, related_name='images', on_delete=models.CASCADE)
+class ScanTomeImage(models.Model):
+    tome_scan = models.ForeignKey(ScanTome, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='scan_images/')
     description = models.CharField(max_length=255, blank=True)
     
     def save(self, *args, **kwargs):
         # Générer le nom de fichier basé sur le slug de l'anime
-        scan_slug = slugify(self.scan.slug)
+        scan_slug = slugify(self.tome_scan.slug)
         base_filename = f"{scan_slug}"
 
         # Vérifier s'il existe déjà une image avec ce nom (pour ajouter un suffixe)
         count = 1
-        while TomeScanImage.objects.filter(image__startswith=base_filename).exists():
+        while ScanTomeImage.objects.filter(image__startswith=base_filename).exists():
             base_filename = f"{scan_slug}-{count}"
             count += 1
         
@@ -578,7 +580,7 @@ class TomeScanImage(models.Model):
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return f"Image de {self.scan.main_title}"
+        return f"Image de {self.tome_scan.scan.main_title}"
 
 
 #relation
@@ -613,7 +615,7 @@ class RelationAnime(models.Model):
 
         if inverse_type and not RelationAnime.objects.filter(
             anime_source=self.anime_target,
-            manga_target=self.anime_source,
+            anime_target=self.anime_source,
             relation_type=inverse_type
         ).exists():
             RelationAnime.objects.create(
@@ -756,7 +758,7 @@ class RelationAnimeManga(models.Model):
         unique_together = ('anime', 'manga', 'source_type')
     
     def __str__(self):
-        if source_type == 'anime':
+        if self.source_type == 'anime':
             return f"{self.anime} → {self.relation_type} → {self.manga}"
         else:
             return f"{self.manga} → {self.relation_type} → {self.anime}"
@@ -827,7 +829,7 @@ class RelationAnimeScan(models.Model):
         unique_together = ('anime', 'scan', 'source_type')
     
     def __str__(self):
-        if source_type == 'anime':
+        if self.source_type == 'anime':
             return f"{self.anime} → {self.relation_type} → {self.scan}"
         else:
             return f"{self.scan} → {self.relation_type} → {self.anime}"
@@ -898,7 +900,7 @@ class RelationMangaScan(models.Model):
         unique_together = ('manga', 'scan', 'source_type')
     
     def __str__(self):
-        if source_type == 'manga':
+        if self.source_type == 'manga':
             return f"{self.manga} → {self.relation_type} → {self.scan}"
         else:
             return f"{self.scan} → {self.relation_type} → {self.manga}"

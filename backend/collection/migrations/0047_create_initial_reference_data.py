@@ -3,6 +3,7 @@ from django.db import migrations
 def create_initial_genres(apps, schema_editor):
     TypeManga = apps.get_model('collection', 'TypeManga')
     TypeManga.objects.bulk_create([
+        TypeManga(name='Anthologie', slug='anthologie'),
         TypeManga(name='Seinen', slug='seinen'),
         TypeManga(name='Shojo', slug='shojo'),
         TypeManga(name='Shonen', slug='shonen'),
@@ -27,6 +28,8 @@ def create_initial_genres(apps, schema_editor):
         'alternative': RelationType.objects.create(code='alternative', label='Version alternative'),
         'origine_of_adaptation': RelationType.objects.create(code='origine_of_adaptation', label="Origine de l'adaptation"),
         'adaptation': RelationType.objects.create(code='adaptation', label='Adaptation'),
+        'autre': RelationType.objects.create(code='autre', label='Autre'),
+        'autre_adaptation': RelationType.objects.create(code='autre_adaptation', label='Autre Adaptation'),
     }
 
     # Étape 2 : On met à jour les relations inverses
@@ -39,6 +42,9 @@ def create_initial_genres(apps, schema_editor):
     relations['alternative'].inverse = relations['alternative']  # auto-inverse
     relations['origine_of_adaptation'].inverse = relations['adaptation']
     relations['adaptation'].inverse = relations['origine_of_adaptation']
+    relations['autre'].inverse = relations['autre']
+    relations['autre_adaptation'].inverse = relations['autre_adaptation']
+    
 
     # Save des mises à jour
     for r in relations.values():
@@ -67,6 +73,7 @@ def create_initial_genres(apps, schema_editor):
         Role(code='scenariste', label='Scenariste'),
         Role(code='designer', label='Designer'),
         Role(code='chara_designer', label='Chara_designer'),
+        Role(code='illustrator', label='Illustrator'),
     ]),
     
     StudioRole = apps.get_model('collection', 'StudioRole')
@@ -86,7 +93,7 @@ def create_initial_genres(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('collection', '0042_alter_origin_slug'),
+        ('collection', '0045_create_initial_reference_data'),
     ]
 
     operations = [

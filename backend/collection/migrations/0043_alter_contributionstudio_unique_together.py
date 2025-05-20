@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('collection', '0042_create_initial_reference_data'),
+        ('collection', '0042_alter_origin_slug'),
     ]
 
     operations = [
