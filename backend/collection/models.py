@@ -445,7 +445,7 @@ class Scan(models.Model):
     type = models.ForeignKey(TypeManga, on_delete=models.CASCADE, related_name='scan')
     synopsis = models.TextField()
     status = models.ForeignKey(Status, on_delete=models.CASCADE, related_name='scan')
-    year_start_jp = models.PositiveIntegerField()
+    year_start = models.PositiveIntegerField()
     author = models.ManyToManyField('Contribution', related_name='scan_author', blank=True)
     scenariste = models.ManyToManyField('Contribution', related_name='scan_scenariste', blank=True)
     designer = models.ManyToManyField('Contribution', related_name='scan_designer', blank=True)
@@ -522,9 +522,9 @@ class ScanTome(models.Model):
         related_name='tomes'
     )
     number = models.PositiveIntegerField()
-    date_publication_jp = models.DateField(null=True, blank=True)
+    date_publication = models.DateField(null=True, blank=True)
     back_cover = models.TextField(null=True)
-    slug = models.CharField(max_length=255,null=True)
+    slug = models.CharField(max_length=255)
     
     def save(self, *args, **kwargs):
         original_slug = slugify(f"{self.scan.main_title} Tome {self.number}")
@@ -538,7 +538,7 @@ class ScanTome(models.Model):
     def __str__(self):
         return f"{self.scan.main_title} – Tome {self.number}"
 
-class TomeChapter(models.Model):
+class ScanChapter(models.Model):
     tome_scan = models.ForeignKey(
         ScanTome,
         on_delete=models.CASCADE,

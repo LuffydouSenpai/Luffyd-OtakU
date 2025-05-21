@@ -6,7 +6,7 @@ from .models import (
     TypeManga, Language, RelationType, Origin, Format, Season,
     People, Role, Contribution, Studio, StudioRole, ContributionStudio,
     AnimeEpisode, MangaTome, MangaChapter, MangaTomeImage, Scan,
-    ScanImage, ScanTitle, RelationScan, ScanTome, TomeChapter,
+    ScanImage, ScanTitle, RelationScan, ScanTome, ScanChapter,
     ScanTomeImage, RelationAnimeManga, RelationAnimeScan,
     RelationMangaScan, Status
 )
@@ -373,7 +373,7 @@ class ScanTomeAdmin(admin.ModelAdmin):
     
     form = TomeScanAdminForm
     
-    list_display = ['scan', 'number', 'date_publication_jp']
+    list_display = ['scan', 'number', 'date_publication']
     search_fields = ['scan__main_title']
     autocomplete_fields = ['scan']
     exclude = ('slug',)  # Exclut le champ 'slug' du formulaire
@@ -392,7 +392,7 @@ class ScanTomeAdmin(admin.ModelAdmin):
     image_previews.allow_tags = True  # Permet d'afficher le HTML dans l'admin
     image_previews.short_description = 'Aperçu des images'  # Titre de la colonne
 
-@admin.register(TomeChapter)
+@admin.register(ScanChapter)
 class ScanChapterAdmin(admin.ModelAdmin):
     list_display = ['tome_scan', 'number', 'title']
     list_filter = ['tome_scan']

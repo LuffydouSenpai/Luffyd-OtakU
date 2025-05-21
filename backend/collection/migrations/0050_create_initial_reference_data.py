@@ -93,7 +93,7 @@ def create_initial_genres(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('collection', '0045_create_initial_reference_data'),
+        ('collection', '0049_rename_year_start_jp_scan_year_start_and_more'),
     ]
 
     operations = [
