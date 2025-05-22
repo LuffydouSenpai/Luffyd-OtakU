@@ -24,3 +24,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@theme {
+
+    --color-purple: #6B21A8;
+    --color-purple2: #7C3AED
+    
+}
