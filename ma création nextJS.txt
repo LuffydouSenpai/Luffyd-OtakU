@@ -24,3 +24,4 @@ python manage.py makemigrations         pour créer les migrations
 python manage.py migrate                pour appliquer les modifications
 
 
+rafc (pour générer un component next js)
