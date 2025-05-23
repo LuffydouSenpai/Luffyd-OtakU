@@ -1,3 +1,88 @@
 from django.shortcuts import render
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import generics
+
+from .models import Manga, MangaTitle, AnimeTitle, ScanTitle
+from .serializers import MangaSerializer, UnifiedTitleSerializer
+
+
 # Create your views here.
+class MangaListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Manga.objects.all()
+    serializer_class = MangaSerializer
+
+
+class GlobalTitleSearchAPIView(APIView):
+    def get(self, request):
+        query = request.query_params.get('search', '').strip()
+        if not query:
+            return Response([])
+
+        results = []
+        
+        seen = set()
+
+        # MangaTitle
+        manga_titles = MangaTitle.objects.select_related('manga').filter(title__icontains=query)
+
+        for t in manga_titles:
+            
+            manga = t.manga
+            key = f"manga-{manga.id}"
+            
+            if key in seen:
+                continue  # déjà traité
+            try:
+                main = manga.manga_titles.get(is_main=True)
+                results.append({
+                    "id": manga.id,
+                    "main_title": main.title,
+                    "type": "manga"
+                })
+                seen.add(key)
+            except MangaTitle.DoesNotExist:
+                continue
+
+        # AnimeTitle
+        anime_titles = AnimeTitle.objects.select_related('anime').filter(title__icontains=query)
+        
+        for t in anime_titles:
+            anime = t.anime
+            key = f"anime-{anime.id}"
+            if key in seen:
+                continue
+            try:
+                main = anime.anime_titles.get(is_main=True)
+                results.append({
+                    "id": anime.id,
+                    "main_title": main.title,
+                    "type": "anime"
+                })
+                seen.add(key)
+            except AnimeTitle.DoesNotExist:
+                continue
+
+        # ScanTitle
+        scan_titles = ScanTitle.objects.select_related('scan').filter(title__icontains=query)
+        
+        for t in scan_titles:
+            scan = t.scan
+            key = f"scan-{scan.id}"
+            if key in seen:
+                continue
+            try:
+                main = scan.scan_titles.get(is_main=True)
+                results.append({
+                    "id": scan.id,
+                    "main_title": main.title,
+                    "type": "scan"
+                })
+                seen.add(key)
+            except ScanTitle.DoesNotExist:
+                continue
+
+        # Sérialisation
+        serializer = UnifiedTitleSerializer(results, many=True)
+        return Response(serializer.data)
