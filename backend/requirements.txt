@@ -4,3 +4,5 @@ python-decouple
 dj-database-url
 python-slugify
 Pillow
+django-cors-headers
+djangorestframework

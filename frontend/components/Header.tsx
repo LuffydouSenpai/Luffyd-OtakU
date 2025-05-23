@@ -13,9 +13,9 @@ export default function Header() {
                 </div>
                 <div className="bg-purple2 p-4 pt-2 pb-2 w-full ">
                     <nav className="flex text-base justify-around items-center w-3/4 mx-auto">
-                        <Link href="/search/anime" className="hover:underline hover:text-pink-500">Anime</Link>
-                        <Link href="/search/manga" className="hover:underline hover:text-pink-500">Manga</Link>
-                        <Link href="/search/scan" className="hover:underline hover:text-pink-500">Scan</Link>
+                        <Link href="/anime" className="hover:underline hover:text-pink-500">Anime</Link>
+                        <Link href="/manga" className="hover:underline hover:text-pink-500">Manga</Link>
+                        <Link href="/scan" className="hover:underline hover:text-pink-500">Scan</Link>
                         <Link href="/library" className="hover:underline hover:text-pink-500">Bibliothèque</Link>
                         <Link href="/statistics" className="hover:underline hover:text-pink-500">Statistiques</Link>
                     </nav>

@@ -1,18 +1,18 @@
 from django.shortcuts import render
 
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 
-from .models import Manga, MangaTitle, AnimeTitle, ScanTitle
-from .serializers import MangaSerializer, UnifiedTitleSerializer
+from .models import Anime, Manga, MangaTitle, AnimeTitle, ScanTitle
+from .serializers import AnimeSerializer, MangaSerializer, UnifiedTitleSerializer
 
 
 # Create your views here.
 class MangaListCreateAPIView(generics.ListCreateAPIView):
     queryset = Manga.objects.all()
     serializer_class = MangaSerializer
-
 
 class GlobalTitleSearchAPIView(APIView):
     def get(self, request):
@@ -86,3 +86,17 @@ class GlobalTitleSearchAPIView(APIView):
         # Sérialisation
         serializer = UnifiedTitleSerializer(results, many=True)
         return Response(serializer.data)
+    
+
+
+
+class AnimeViewSet(viewsets.ModelViewSet):
+    queryset = Anime.objects.all()
+    serializer_class = AnimeSerializer
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        slug = self.request.query_params.get('slug')
+        if slug:
+            return Anime.objects.filter(slug=slug)
+        return Anime.objects.all()

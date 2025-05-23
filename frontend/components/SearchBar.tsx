@@ -1,25 +1,32 @@
 'use client';
-import { useState } from 'react';
+
+import { FormEvent } from "react";
 
 type SearchBarProps = {
   placeholder?: string;
-  onSearch: (value: string) => void;
+  value: string;
+  onChange: (value: string) => void;
+  onSubmit?: (value: string) => void;
 };
 
-export default function SearchBar({ placeholder = 'Rechercher...', onSearch }: SearchBarProps) {
-  const [query, setQuery] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
+export default function SearchBar({
+  placeholder = 'Rechercher...',
+  value,
+  onChange,
+  onSubmit,
+}: SearchBarProps) {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSearch(query.trim());
+    if (onSubmit) {
+      onSubmit(value.trim());
+    }
   };
-
   return (
     <form onSubmit={handleSubmit} className="flex items-center w-full">
       <input
         type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full px-4 py-2 rounded-l-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple2"
       />
