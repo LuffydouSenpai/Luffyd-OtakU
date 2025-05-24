@@ -20,7 +20,10 @@ class AnimeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Anime
-        fields = "__all__"  # ou liste explicite ['title', 'author', 'release_date']
+        fields = "__all__"  #for development and explicit list for production ['title', 'author', 'release_date']
+
+
+
 
 
 

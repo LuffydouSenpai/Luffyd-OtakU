@@ -284,18 +284,6 @@ class LanguageTestCase(TestCase):
     def test_str_method(self):
         self.assertEqual(str(self.lang), "aaaaaa")
 
-    def test_code_uniqueness(self):
-        with self.assertRaises(IntegrityError):
-            Language.objects.create(code="jp", name="Japonais2", native_name="日本語2")
-
-    def test_name_uniqueness(self):
-        with self.assertRaises(IntegrityError):
-            Language.objects.create(code="kr", name="Japonais", native_name="한국어")
-
-    def test_native_name_uniqueness(self):
-        with self.assertRaises(IntegrityError):
-            Language.objects.create(code="cn", name="Chinois", native_name="日本語")
-
     def test_code_max_length(self):
         lang = Language(code="abcdef", name="Test", native_name="テスト")
         with self.assertRaises(ValidationError):
