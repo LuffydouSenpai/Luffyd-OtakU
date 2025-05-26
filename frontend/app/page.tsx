@@ -10,6 +10,7 @@ import SearchBar from '@/components/SearchBar';
 type Result = {
   id: number;
   main_title: string;
+  image_url: string;
   type: string;
 };
 
@@ -54,15 +55,32 @@ export default function Home() {
           {loading && <p className="mt-4 text-gray-500">Chargement...</p>}
 
           <ul className="mt-6 space-y-3">
-            {results.slice(0, 10).map((item) => (
-              <li
-                key={`${item.type}-${item.id}`}
-                className="border p-4 rounded-md bg-white shadow-sm"
-              >
-                <p className="font-bold">{item.main_title}</p>
-                <span className="text-xs text-gray-500 uppercase">{item.type}</span>
-              </li>
-            ))}
+            {results.slice(0, 10).map((item) =>
+              item.type === "anime" ? (
+                <li
+                  key={`${item.type}-${item.id}`}
+                  className="border p-4 rounded-md bg-purple2 shadow-sm"
+                >
+                  <div className='flex '>
+                    <div>
+                      <Image
+                        src={`http://localhost:8001/media/${item.image_url}`}
+                        alt="image de l'anime"
+                        width={60}
+                        height={20}
+                        className="rounded-xl mx-auto shadow-md"
+                        unoptimized
+                      />
+                    </div>
+                    <div>
+                      <p className="font-bold text-white">{item.main_title}</p>
+                      <span className="text-xs text-perso-gray uppercase">{item.type}</span>
+                    </div>
+                  </div>
+
+                </li>
+              ) : null
+            )}
           </ul>
         </div>
         {/* Ajoute ici tes composants ou sections futures */}

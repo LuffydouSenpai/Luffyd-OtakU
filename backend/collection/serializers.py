@@ -37,4 +37,5 @@ class MangaSerializer(serializers.ModelSerializer):
 class UnifiedTitleSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     main_title = serializers.CharField()
+    image_url = serializers.CharField()
     type = serializers.CharField()
