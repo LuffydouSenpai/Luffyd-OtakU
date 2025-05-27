@@ -41,7 +41,7 @@ class GlobalTitleSearchAPIView(APIView):
                 main = manga.manga_titles.get(is_main=True)
 
                 # Récupération de l’image principale associée
-                image = MangaImage.objects.filter(id=manga.id).first()
+                image = MangaImage.objects.filter(manga=manga.id).first()
 
                 results.append(
                     {"id": manga.id,
@@ -98,7 +98,7 @@ class GlobalTitleSearchAPIView(APIView):
                 continue
             try:
                 main = scan.scan_titles.get(is_main=True)
-                image = ScanImage.objects.filter(id=scan.id).first()
+                image = ScanImage.objects.filter(scan=scan.id).first()
                 
                 results.append(
                     {"id": scan.id,
