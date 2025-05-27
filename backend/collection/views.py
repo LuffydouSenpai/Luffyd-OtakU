@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 
-from .models import Anime, AnimeImage, Manga, MangaImage, MangaTitle, AnimeTitle, ScanImage, ScanTitle
+from .models import Anime, AnimeImage, Manga, MangaImage, MangaTitle, AnimeTitle, Scan, ScanImage, ScanTitle
 from .serializers import AnimeSerializer, MangaSerializer, UnifiedTitleSerializer
 
 
@@ -127,3 +127,13 @@ class AnimeViewSet(viewsets.ModelViewSet):
         if slug:
             return Anime.objects.filter(slug=slug)
         return Anime.objects.all()
+
+
+class EntryCountView(APIView):
+    def get(self, request):
+        data = {
+            "anime": Anime.objects.count(),
+            "manga": Manga.objects.count(),
+            "scan": Scan.objects.count(),
+        }
+        return Response(data)

@@ -42,3 +42,9 @@ class UnifiedTitleSerializer(serializers.Serializer):
     type_support = serializers.CharField()
     year = serializers.IntegerField()
     slug = serializers.CharField()
+
+
+class AllCountSerializer(serializers.Serializer):
+    manga_count = serializers.IntegerField()
+    anime_count = serializers.IntegerField()
+    scan_count = serializers.IntegerField()
