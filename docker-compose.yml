@@ -26,7 +26,17 @@ services:
       - db
     environment:
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE}
-  
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "8001:80"
+    volumes:
+      - ./media:/app/media
+    depends_on:
+      - backend
+    
   frontend:
     build:
       context: ./frontend

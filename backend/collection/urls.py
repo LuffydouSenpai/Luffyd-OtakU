@@ -1,6 +1,7 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 from .views import (
+    EntryCountView,
     MangaListCreateAPIView,
     GlobalTitleSearchAPIView,
     AnimeViewSet,
@@ -12,7 +13,8 @@ router.register(r'animes', AnimeViewSet)  # /api/animes/
 
 urlpatterns = [
     path('mangas/', MangaListCreateAPIView.as_view(), name='manga-list'),
-    path('titres/', GlobalTitleSearchAPIView.as_view()),
+    path('entry_count/', EntryCountView.as_view(), name='entry-count'),
+    path('titres/', GlobalTitleSearchAPIView.as_view()), 
 ]
 
 # Ajoute les routes du router à urlpatterns

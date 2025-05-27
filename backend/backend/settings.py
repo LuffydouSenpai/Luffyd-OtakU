@@ -137,6 +137,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Fichiers médias : gestion des uploads d'images
-MEDIA_URL = '/media/'  # URL à utiliser pour accéder aux fichiers téléchargés
-MEDIA_ROOT = BASE_DIR / 'media'  # Emplacement local pour stocker les fichiers (relatif au répertoire du projet)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
