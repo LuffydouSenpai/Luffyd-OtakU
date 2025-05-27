@@ -70,7 +70,8 @@ class GlobalTitleSearchAPIView(APIView):
                 continue
             try:
                 main = anime.anime_titles.get(is_main=True)
-                image = AnimeImage.objects.filter(id=anime.id).first()
+                image = AnimeImage.objects.filter(anime=anime.id).first()
+                print("test",image)
                 
                 results.append(
                     {"id": anime.id,

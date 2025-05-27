@@ -145,7 +145,7 @@ export default function Home() {
     <>
       <Header />
 
-      <main className="container mx-auto px-6 py-10 flex-grow">
+      <main className="container mx-auto px-6 py-10 flex-grow mb-80">
 
         <section id='banner'>
           <div className="flex items-center">
@@ -160,7 +160,7 @@ export default function Home() {
         </section>
 
         <section id='searchBar' ref={searchBarRef}>
-          <div className="max-w-4xl mx-auto px-6 py-10 relative">
+          <div className="max-w-4xl mx-auto px-6 py-10 relative" >
             <SearchBar
               value={query}
               onChange={setQuery}
@@ -174,7 +174,7 @@ export default function Home() {
             {loading && <p className="mt-4 text-gray-500">Chargement...</p>}
 
             {showResults && (
-              <ul className="absolute w-full">
+              <ul className="absolute left-0 w-full z-50 rounded-md shadow-lg mt-1">
                 {types.map((type) =>
                   finalResults[type].length > 0 && (
                     <Fragment key={type}>
@@ -187,14 +187,14 @@ export default function Home() {
                           href={`/${item.type_support}/${item.slug}`}
                           passHref
                         >
-                          <li className="group border-solid border-gray-700 border-1 pl-4 rounded-md mb-0 bg-purple-card shadow-sm hover:bg-purple hover:p-4">
+                          <li className="group border-solid border-gray-700 border-1 pl-4 rounded-md mb-0 bg-purple-card shadow-sm hover:bg-purple hover:py-2">
                             <div className="flex">
-                              <div className="w-[100px] h-[100px] group-hover:w-auto group-hover:h-auto flex justify-center items-center overflow-hidden">
+                              <div className="w-[80px] h-[60px] group-hover:w-auto group-hover:h-auto flex justify-center items-center overflow-hidden">
                                 <Image
                                   src={getImageSrc(item.image_url)}
                                   alt={`image de ${item.type_support}`}
-                                  width={100}
-                                  height={100}
+                                  width={80}
+                                  height={60}
                                   className="rounded-xl mx-auto shadow-md object-contain"
                                   unoptimized
                                 />
@@ -202,7 +202,9 @@ export default function Home() {
                               <div className="ml-4 flex flex-col justify-center">
                                 <p className="font-bold text-white">{item.main_title}</p>
                                 <span className="text-xs text-perso-gray">
-                                  ({item.format}, {item.year})
+                                  {item.type_support === "anime"
+                                    ? `(${item.format}, ${item.year})`
+                                    : `(${item.type_support}, ${item.year})`}
                                 </span>
                               </div>
                             </div>
