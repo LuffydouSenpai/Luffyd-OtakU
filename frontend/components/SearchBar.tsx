@@ -28,11 +28,11 @@ export default function SearchBar({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-2 rounded-l-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple2"
+        className="w-full px-4 py-2 rounded-l-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-card"
       />
       <button
         type="submit"
-        className="bg-purple2 hover:bg-purple text-white px-4 py-2 rounded-r-md"
+        className="bg-purple-card hover:bg-purple text-white px-4 py-2 rounded-r-md"
       >
         Go
       </button>

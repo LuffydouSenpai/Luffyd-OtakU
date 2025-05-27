@@ -46,8 +46,13 @@ class GlobalTitleSearchAPIView(APIView):
                 results.append(
                     {"id": manga.id,
                     "main_title": main.title,
+                    "format": None,
                     "image_url": image.image if image else None,
-                    "type": "manga"}
+                    "type_support": "manga",
+                    "year": manga.year_start_fr,
+                    "slug": manga.slug,}
+                    
+                    
                 )
                 seen.add(key)
             except MangaTitle.DoesNotExisFFt:
@@ -70,8 +75,11 @@ class GlobalTitleSearchAPIView(APIView):
                 results.append(
                     {"id": anime.id,
                     "main_title": main.title,
+                    "format": anime.format,
                     "image_url": image.image if image else None,
-                    "type": "anime"}
+                    "type_support": "anime",
+                    "year": anime.season.year,
+                    "slug": anime.slug,}
                 )
                 seen.add(key)
             except AnimeTitle.DoesNotExist:
@@ -94,8 +102,11 @@ class GlobalTitleSearchAPIView(APIView):
                 results.append(
                     {"id": scan.id,
                     "main_title": main.title,
+                    "format": None,
                     "image_url": image.image if image else None,
-                    "type": "scan"}
+                    "type_support": "scan",
+                    "year": scan.year_start,
+                    "slug": scan.slug,}
                 )
                 seen.add(key)
             except ScanTitle.DoesNotExist:

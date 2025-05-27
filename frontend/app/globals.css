@@ -28,7 +28,8 @@ body {
 @theme {
 
     --color-purple: #6B21A8;
-    --color-purple2: #7C3AED;
+    --color-purple-card: #7C3AED;
+    --color-purple-middle: #8453da; 
     --color-perso-gray: #F3F4F6;
     
 }
