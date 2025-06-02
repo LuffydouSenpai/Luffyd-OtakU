@@ -48,3 +48,6 @@ class AllCountSerializer(serializers.Serializer):
     manga_count = serializers.IntegerField()
     anime_count = serializers.IntegerField()
     scan_count = serializers.IntegerField()
+    episode_nime_count = serializers.IntegerField()
+    tome_manga_count = serializers.IntegerField()
+    tome_scan_count = serializers.IntegerField()

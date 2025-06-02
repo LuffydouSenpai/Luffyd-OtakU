@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 
-from .models import Anime, AnimeImage, Manga, MangaImage, MangaTitle, AnimeTitle, Scan, ScanImage, ScanTitle
+from .models import Anime, AnimeEpisode, AnimeImage, Manga, MangaImage, MangaTitle, AnimeTitle, MangaTome, Scan, ScanImage, ScanTitle, ScanTome
 from .serializers import AnimeSerializer, MangaSerializer, UnifiedTitleSerializer
 
 
@@ -136,5 +136,8 @@ class EntryCountView(APIView):
             "anime": Anime.objects.count(),
             "manga": Manga.objects.count(),
             "scan": Scan.objects.count(),
+            "episode_anime": AnimeEpisode.objects.count(),
+            "tome_manga": MangaTome.objects.count(),
+            "tome_scan": ScanTome.objects.count(),
         }
         return Response(data)

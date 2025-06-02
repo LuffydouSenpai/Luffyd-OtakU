@@ -7,41 +7,24 @@ import Image from 'next/image';
 import SearchBar from '@/components/SearchBar';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
+import { transformerLabel } from './lib/labelTransformer';
+import { useSearch } from './hooks/useSearch';
+import { useEntryCount } from './hooks/useEntryCount';
+import { distributeResults } from './utils/distributeResults';
+import { getImageSrc } from './utils/image';
+import { numberToGifArray } from './utils/numberToGifArray';
 
-
-type Result = {
-  id: number;
-  main_title: string;
-  format: string;
-  image_url: string;
-  type_support: string;
-  year: number;
-  slug: string;
-};
 
 export default function Home() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Result[]>([]);
-  const [loading, setLoading] = useState(false);
-
   const [showResults, setShowResults] = useState(false);
   const searchBarRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      if (query.trim()) {
-        fetch(`http://localhost:8000/api/titres/?search=${query}`)
-          .then((res) => res.json())
-          .then(setResults)
-          .catch(console.error)
-          .finally(() => setLoading(false));
-      } else {
-        setResults([]); // Efface les résultats si champ vide
-      }
-    }, 400);
-    return () => clearTimeout(delay);
-  }, [query]);
-
+  const { results, loading } = useSearch(query);
+  const entryCount = useEntryCount();
+  const finalResults = distributeResults(results);
+  
+  type TypeSupport = "anime" | "manga" | "scan";
+  const types: TypeSupport[] = ["anime", "manga", "scan"];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,101 +34,19 @@ export default function Home() {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
-    if (query.trim()) {
-      setShowResults(true);
-    } else {
-      setShowResults(false);
-    }
+    setShowResults(!!query.trim());
   }, [query]);
 
-  const getImageSrc = (image_url?: string) => {
-    return image_url && image_url.trim() !== ''
-      ? `http://localhost:8001/media/${image_url}`
-      : '/images/default.png';
-  };
-
-
-
-  type TypeSupport = "anime" | "manga" | "scan";
-
-  const WEIGHTS: Record<TypeSupport, number> = {
-    anime: 5,
-    manga: 3,
-    scan: 2,
-  };
-
-  const MAX_TOTAL = 10;
-
-  // Regroupe les résultats par type
-  const finalResults: Record<TypeSupport, Result[]> = {
-    anime: [],
-    manga: [],
-    scan: [],
-  };
-
-  for (const item of results) {
-    if (item.type_support in finalResults) {
-      finalResults[item.type_support as TypeSupport].push(item);
-    }
-  }
-
-  // Coupe selon le poids
-  for (const type of Object.keys(finalResults) as TypeSupport[]) {
-    finalResults[type] = finalResults[type].slice(0, WEIGHTS[type]);
-  }
-
-  // Calcule total actuel
-  const currentTotal = finalResults.anime.length + finalResults.manga.length + finalResults.scan.length;
-  let missing = MAX_TOTAL - currentTotal;
-
-  // Si il reste de la place, on réalloue en prenant dans les listes non sélectionnées
-  if (missing > 0) {
-    // Récupère les extras disponibles en excluant déjà pris
-    const extras = [
-      ...results.filter(i => i.type_support === "anime").slice(finalResults.anime.length),
-      ...results.filter(i => i.type_support === "manga").slice(finalResults.manga.length),
-      ...results.filter(i => i.type_support === "scan").slice(finalResults.scan.length),
-    ];
-
-    for (const item of extras) {
-      if (missing === 0) break;
-
-      const type = item.type_support as TypeSupport;
-      finalResults[type].push(item);
-      missing--;
-    }
-  }
-
-  const types: TypeSupport[] = ["anime", "manga", "scan"];
-
-  const [entryCount, setEntryCount] = useState<{ anime: number; manga: number; scan: number }>({
-    anime: 0,
-    manga: 0,
-    scan: 0,
-  });
-
-  useEffect(() => {
-    fetch('http://localhost:8000/api/entry_count/')
-      .then((res) => res.json())
-      .then(setEntryCount)
-      .catch(console.error);
-  }, []);
-
-  const numberToGifArray = (number: number) => {
-    return String(number).split('');
-  };
 
   return (
     <>
       <Header />
 
-      <main className="container mx-auto px-6 py-10 flex-grow mb-80">
+      <main className="container mx-auto px-6 py-10 flex-grow">
 
         <section id='banner'>
           <div className="flex items-center">
@@ -227,6 +128,30 @@ export default function Home() {
               return (
                 <div key={entryKey} className="border bg-purple-card flex-1 mx-2 text-center py-6">
                   <p className="text-3xl text-white p-8 capitalize">Entry {entryKey}</p>
+                  <div className="flex justify-center gap-1">
+                    {numberToGifArray(value).map((digit, idx) => (
+                      <Image
+                        key={idx}
+                        src={`/entry/${digit}.gif`}
+                        alt={`Chiffre ${digit}`}
+                        width={50}
+                        height={50}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+        <section>
+          <div className='flex gap-24 p-4 mt-20'>
+            {["episode_anime", "tome_manga", "tome_scan"].map((entryKey) => {
+              const value = entryCount[entryKey as keyof typeof entryCount];
+
+              return (
+                <div key={entryKey} className="border bg-purple-card flex-1 mx-2 text-center py-6">
+                  <p className="text-3xl text-white p-8 capitalize"> {transformerLabel(entryKey)}</p>
                   <div className="flex justify-center gap-1">
                     {numberToGifArray(value).map((digit, idx) => (
                       <Image
