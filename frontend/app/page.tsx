@@ -7,12 +7,12 @@ import Image from 'next/image';
 import SearchBar from '@/components/SearchBar';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
-import { transformerLabel } from './lib/labelTransformer';
-import { useSearch } from './hooks/useSearch';
-import { useEntryCount } from './hooks/useEntryCount';
-import { distributeResults } from './utils/distributeResults';
-import { getImageSrc } from './utils/image';
-import { numberToGifArray } from './utils/numberToGifArray';
+import { transformerLabel } from '../lib/labelTransformer';
+import { useSearch } from '../hooks/useSearch';
+import { useEntryCount } from '../hooks/useEntryCount';
+import { distributeResults } from '../utils/distributeResults';
+import { getImageSrc } from '../utils/image';
+import { numberToGifArray } from '../utils/numberToGifArray';
 
 
 export default function Home() {
